@@ -16,8 +16,58 @@
       <button id="skibidi">Play as Skibidi 🚽</button>
       <button id="ohio">Play as Ohio 🛑</button>
     </div>
+    <div class="row controls">
+      <button id="restart">Restart ⟲</button>
+      <button id="superShot">Super Shot ✦</button>
+      <button id="autoFire">Auto-Fire: Off</button>
+    </div>
     <p class="hint">Move: ← → or A/D &nbsp;|&nbsp; Shoot: Space &nbsp;|&nbsp; (No sound)</p>
   </div>
   <script src="script.js"></script>
+  <script>
+    (function(){
+      const exists = name => typeof window[name] === 'function';
+      const $ = id => document.getElementById(id);
+      const restartBtn = $('restart');
+      const superBtn = $('superShot');
+      const autoBtn = $('autoFire');
+
+      if(restartBtn){
+        restartBtn.addEventListener('click', ()=>{
+          if(exists('reset')){
+            try{ window.reset(); }catch(e){ location.reload(); }
+          } else {
+            location.reload();
+          }
+        });
+      }
+
+      if(superBtn){
+        superBtn.addEventListener('click', ()=>{
+          if(exists('shoot')){
+            // fire a short burst of shots as a "super" move
+            try{
+              window.shoot(); window.shoot(); window.shoot();
+            }catch(e){ /* ignore if shoot not available */ }
+          }
+        });
+      }
+
+      let autoInterval = null;
+      if(autoBtn){
+        autoBtn.addEventListener('click', ()=>{
+          if(autoInterval){
+            clearInterval(autoInterval);
+            autoInterval = null;
+            autoBtn.textContent = 'Auto-Fire: Off';
+          } else {
+            if(!exists('shoot')) return;
+            autoInterval = setInterval(()=>{ try{ window.shoot(); }catch(e){} }, 180);
+            autoBtn.textContent = 'Auto-Fire: On';
+          }
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
